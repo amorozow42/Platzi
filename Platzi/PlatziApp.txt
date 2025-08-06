@@ -1,0 +1,96 @@
+//
+//  ProductListScreen.swift
+//  Platzi
+//
+//  Created by Mohammad Azam on 7/19/25.
+//
+
+import SwiftUI
+
+struct ProductListScreen: View {
+    
+    let category: Category
+    @Environment(PlatziStore.self) private var store
+    @Environment(\.dismiss) private var dismiss
+    @State private var loadingState: LoadingState<[Product]> = .loading
+    @State private var showAddProductScreen: Bool = false
+    
+    private func loadProducts() async {
+        do {
+            try await store.loadProductsBy(categoryId: category.id)
+            loadingState = .success(store.products)
+        } catch {
+            loadingState = .failure(error)
+        }
+    }
+    
+    var body: some View {
+        ZStack {
+            switch loadingState {
+                case .loading:
+                    ProgressView("Loading...")
+                case .success(let products):
+                    if products.isEmpty {
+                        ContentUnavailableView("No products available", systemImage: "shippingbox")
+                    } else {
+                        List(products) { product in
+                            NavigationLink {
+                                ProductDetailScreen(product: product)
+                            } label: {
+                                ProductCellView(product: product)
+                            }
+                        }
+                    }
+                case .failure(let error):
+                    Text(error.localizedDescription)
+                        .foregroundStyle(.red)
+            }
+        }
+        .task {
+            await loadProducts()
+        }
+        .onChange(of: store.products, {
+            loadingState = .success(store.products)
+        })
+        
+        .sheet(isPresented: $showAddProductScreen, content: {
+            NavigationStack {
+                AddProductScreen(selectedCategoryId: category.id)
+            }
+        })
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Add Product") {
+                    showAddProductScreen = true
+                }
+            }
+        }
+        
+    }
+}
+
+struct ProductCellView: View {
+    
+    let product: Product
+    
+    var body: some View {
+        HStack {
+            AsyncImage(url: product.images.first) { img in
+                img.resizable()
+                    .frame(width: 75, height: 75)
+                    .clipShape(RoundedRectangle(cornerRadius: 16.0, style: .continuous))
+            } placeholder: {
+                ImagePlaceholderView()
+            }
+            
+            Text(product.title)
+        }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        ProductListScreen(category: Category(id: 1, name: "Shirts", slug: "shirts", image: URL(string: "https://placehold.co/600x400")!))
+            .navigationTitle("Shirts")
+    }.environment(PlatziStore(httpClient: .development))
+}
