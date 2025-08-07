@@ -25,7 +25,6 @@ struct ProductListScreen: View {
         defer { isLoading = false }
                 
         do {
-            print("loadingProductsByCategoryId \(category.id)")
             products = try await store.loadProductsBy(categoryId: category.id)
         } catch {
             // show error in toast message

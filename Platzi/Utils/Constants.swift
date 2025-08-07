@@ -7,25 +7,11 @@
 
 import Foundation
 
-struct Constants {
-    
-    struct Urls {
-        static let register = URL(string: "https://api.escuelajs.co/api/v1/users/")!
-        static let login = URL(string: "https://api.escuelajs.co/api/v1/auth/login")!
-        static let refreshToken = URL(string: "https://api.escuelajs.co/api/v1/auth/refresh-token")!
-        static let categories = URL(string: "https://api.escuelajs.co/api/v1/categories")!
-        static let addProduct = URL(string: "https://api.escuelajs.co/api/v1/products/")!
-        
-        static func productsBy(categoryId: Int) -> URL {
-            URL(string: "https://api.escuelajs.co/api/v1/categories/\(categoryId)/products")!
-        }
-    }
-}
-
 enum Endpoint {
     
     private static let baseURL = URL(string: "https://api.escuelajs.co/api/v1")!
 
+    case createCategory
     case register
     case login
     case refreshToken
@@ -36,8 +22,10 @@ enum Endpoint {
 
     var path: String {
         switch self {
+        case .createCategory:
+            return "/categories"
         case .register:
-            return "/users/"
+            return "/users"
         case .login:
             return "/auth/login"
         case .refreshToken:
@@ -45,7 +33,7 @@ enum Endpoint {
         case .categories:
             return "/categories"
         case .addProduct:
-            return "/products/"
+            return "/products"
         case .productsByCategory(let categoryId):
             return "/categories/\(categoryId)/products"
         case .deleteProduct(let productId):

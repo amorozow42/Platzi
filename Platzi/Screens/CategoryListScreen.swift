@@ -11,9 +11,10 @@ struct CategoryListScreen: View {
     
     @Environment(PlatziStore.self) private var store
     @State private var loadingState: LoadingState<[Category]> = .loading
+    @State private var showAddCategoryScreen: Bool = false
     
     var body: some View {
-        Group {
+        ZStack {
             switch loadingState {
             case .loading:
                 ProgressView("Loading...")
@@ -31,6 +32,16 @@ struct CategoryListScreen: View {
                     .foregroundStyle(.red)
             }
         }
+        .toolbar(content: {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Add Category") {
+                    showAddCategoryScreen = true
+                }
+            }
+        })
+        .sheet(isPresented: $showAddCategoryScreen, content: {
+            AddCategoryScreen()
+        })
         .task {
             do {
                 try await store.loadCategories()

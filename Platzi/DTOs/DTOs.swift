@@ -57,6 +57,11 @@ struct Category: Identifiable, Codable, Hashable {
     let image: URL
 }
 
+struct CreateCategoryRequest: Codable {
+    let name: String
+    let url: URL
+}
+
 struct CreateProductRequest: Codable {
     let title: String
     let price: Double
