@@ -55,7 +55,7 @@ struct LocationsScreen: View {
         })
         .task {
             do {
-                isLoading = true  
+                isLoading = true
                 try await store.loadLocations()
                 
                 let coordinates = store.locations.map { $0.coordinate }
@@ -73,5 +73,5 @@ struct LocationsScreen: View {
 
 #Preview {
     LocationsScreen()
-        .environment(PlatziStore(httpClient: .development))
+        .environment(PlatziStore(httpClient: MockHTTPClient.preview))
 }

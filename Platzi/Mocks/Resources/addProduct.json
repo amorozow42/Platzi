@@ -1,0 +1,16 @@
+{
+  "title": "New Product",
+  "slug": "new-product",
+  "price": 10,
+  "description": "A description",
+  "images": ["https://placehold.co/600x400"],
+  "category": {
+    "id": 1,
+    "name": "Clothes",
+    "image": "https://placehold.co/600x400",
+    "slug": "clothes"
+  },
+  "id": 210,
+  "creationAt": "2023-01-03T16:51:33.000Z",
+  "updatedAt": "2023-01-03T16:51:33.000Z"
+}

@@ -56,6 +56,7 @@ struct CategoryListScreen: View {
         .sheet(isPresented: $showAddCategoryScreen, content: {
             NavigationStack {
                 AddCategoryScreen()
+                    .withToast()
             }
         })
         .task {
@@ -78,7 +79,7 @@ struct CategoryCellView: View {
                 ImagePlaceholderView()
             }
             
-            Text(category.name)
+            Text(category.name)  
         }
     }
 }
@@ -86,5 +87,5 @@ struct CategoryCellView: View {
 #Preview {
     NavigationStack {
         CategoryListScreen()
-    }.environment(PlatziStore(httpClient: .development))
+    }.environment(PlatziStore(httpClient: MockHTTPClient.preview))
 }

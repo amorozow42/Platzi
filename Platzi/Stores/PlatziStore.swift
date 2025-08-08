@@ -8,6 +8,10 @@
 import Foundation
 import Observation
 
+enum SampleError: Error {
+    case operationFailed
+}
+
 @MainActor
 @Observable
 class PlatziStore {
@@ -15,9 +19,9 @@ class PlatziStore {
     var categories: [Category] = []
     var locations: [Location] = []
     
-    let httpClient: HTTPClient
+    let httpClient: HTTPClientProtocol
     
-    init(httpClient: HTTPClient) {
+    init(httpClient: HTTPClientProtocol) {
         self.httpClient = httpClient
     }
     
@@ -27,7 +31,6 @@ class PlatziStore {
     }
     
     func createCategory(name: String) async throws {
-        
         let createCategoryRequest = CreateCategoryRequest(name: name, image: URL.randomImageURL)
         let resource = Resource(endpoint: .createCategory, method: .post(try createCategoryRequest.encode()), modelType: Category.self)
         let category = try await httpClient.load(resource)
@@ -45,17 +48,13 @@ class PlatziStore {
     }
     
     func loadProductsBy(categoryId: Int) async throws -> [Product] {
-        
         let resource = Resource(endpoint: .productsByCategory(categoryId), modelType: [Product].self)
         return try await httpClient.load(resource)
     }
     
     func saveProduct(title: String, price: Double, description: String, categoryId: Int, images: [URL]) async throws -> Product {
-        
         let createProductRequest = CreateProductRequest(title: title, price: price, description: description, categoryId: categoryId, images: images)
-        
         let resource = Resource(endpoint: .addProduct, method: .post(try createProductRequest.encode()), modelType: Product.self)
-        
         let product = try await httpClient.load(resource)
         return product
     }

@@ -43,5 +43,5 @@ struct HomeScreen: View {
 
 #Preview {
     HomeScreen()
-        .environment(PlatziStore(httpClient: .development))
+        .environment(PlatziStore(httpClient: MockHTTPClient.preview))
 }

@@ -64,11 +64,16 @@ struct ToastView: View {
     }
 }
 
+enum ToastPlacement {
+    case top
+    case bottom
+}
+
 struct ShowToastAction {
-    typealias Action = (ToastType) -> Void
+    typealias Action = (ToastType, ToastPlacement) -> Void
     let action: Action
     
-    func callAsFunction(_ type: ToastType) {
-        action(type)
+    func callAsFunction(_ type: ToastType, placement: ToastPlacement = .bottom) {
+        action(type, placement)
     }
 }

@@ -16,8 +16,9 @@ struct LoginScreen: View {
     private func login() async {
         do {
             isAuthenticated = try await authenticationController.login(email: email, password: password)
+            print(isAuthenticated)
         } catch {
-            messageText = "❌ \(error.localizedDescription)"
+            messageText = "\(error.localizedDescription)"
         }
     }
     
@@ -67,5 +68,5 @@ struct LoginScreen: View {
 #Preview {
     NavigationStack {
         LoginScreen()
-    }
+    }.environment(PlatziStore(httpClient: MockHTTPClient.preview))
 }

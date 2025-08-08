@@ -7,6 +7,10 @@
 
 import Foundation
 
+protocol HTTPClientProtocol {
+    func load<T: Codable>(_ resource: Resource<T>) async throws -> T
+}
+
 enum HTTPMethod {
     case get([URLQueryItem])
     case post(Data?)
@@ -34,7 +38,7 @@ struct Resource<T: Codable> {
     var modelType: T.Type
 }
 
-struct HTTPClient {
+struct HTTPClient: HTTPClientProtocol {
     
     private let session: URLSession
 
@@ -135,3 +139,5 @@ struct HTTPClient {
 extension HTTPClient {
     static let development = HTTPClient()
 }
+
+

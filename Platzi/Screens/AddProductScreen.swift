@@ -83,5 +83,5 @@ struct AddProductScreen: View {
 #Preview {
     NavigationStack {
         AddProductScreen(selectedCategoryId: 1, onSave: { _ in }) 
-    }.environment(PlatziStore(httpClient: .development))
+    }.environment(PlatziStore(httpClient: HTTPClient.development))
 }

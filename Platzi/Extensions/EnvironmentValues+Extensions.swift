@@ -10,5 +10,5 @@ import SwiftUI
 
 extension EnvironmentValues {
     @Entry var authenticationController = AuthenticationController(httpClient: HTTPClient())
-    @Entry var showToast = ShowToastAction(action: { _ in })
+    @Entry var showToast = ShowToastAction(action: { _, _  in })
 }

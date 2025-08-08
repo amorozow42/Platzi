@@ -12,11 +12,11 @@ struct ProductListScreen: View {
     let category: Category
     @Environment(PlatziStore.self) private var store
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.showToast) private var showToast
     @State private var showAddProductScreen: Bool = false
     @State private var isLoading: Bool = false
     
     @State private var products: [Product] = []
-    @State private var loadingState: LoadingState<[Product]> = .loading
     
     private func loadProducts() async {
                 
@@ -28,7 +28,7 @@ struct ProductListScreen: View {
         do {
             products = try await store.loadProductsBy(categoryId: category.id)
         } catch {
-            // show error in toast message
+            showToast(.error(error.localizedDescription))
             print("Failed to load: \(error.localizedDescription)")
         }
     }
@@ -97,5 +97,5 @@ struct ProductCellView: View {
     NavigationStack {
         ProductListScreen(category: Category(id: 1, name: "Shirts", slug: "shirts", image: URL(string: "https://placehold.co/600x400")!))
             .navigationTitle("Shirts")
-    }.environment(PlatziStore(httpClient: .development))
+    }.environment(PlatziStore(httpClient: MockHTTPClient.preview))
 }

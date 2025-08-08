@@ -11,6 +11,7 @@ struct AddCategoryScreen: View {
     
     @Environment(PlatziStore.self) private var store
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.showToast) private var showToast
     @State private var name: String = ""
     @State private var isLoading: Bool = false
     
@@ -23,11 +24,13 @@ struct AddCategoryScreen: View {
         defer { isLoading = false }
         
         do {
+           
             isLoading = true
             try await store.createCategory(name: name)
+            showToast(.success("Success"), placement: .top)
             dismiss()
         } catch {
-            print(error.localizedDescription)
+            showToast(.error(error.localizedDescription))
         }
     }
     
@@ -47,5 +50,5 @@ struct AddCategoryScreen: View {
 #Preview {
     NavigationStack {
         AddCategoryScreen()
-    }.environment(PlatziStore(httpClient: .development))
+    }.environment(PlatziStore(httpClient: HTTPClient.development))
 }
