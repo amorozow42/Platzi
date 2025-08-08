@@ -4,6 +4,8 @@
 
 A modern SwiftUI iOS application built to interact with the [Platzi Fake Store API](https://fakeapi.platzi.com/en). This app is a great starting point for learning e-commerce app architecture, networking with `async/await`, and working with JWT-based authentication.
 
+> 📚 This project is part of my course on [AzamSharp School](https://azamsharp.teachable.com/p/azamsharp-pro-for-all-content).
+
 ---
 
 ## 🚀 Features
