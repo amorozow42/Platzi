@@ -1,4 +1,4 @@
-![Platzi Promo](Images/platzi-promo.png)
+![Platzi Promo](Platzi/Images/platzi-promo.png)
 
 # 🛍️ Platzi Fake Store API Client
 
