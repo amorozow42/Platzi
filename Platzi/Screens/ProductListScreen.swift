@@ -16,6 +16,7 @@ struct ProductListScreen: View {
     @State private var isLoading: Bool = false
     
     @State private var products: [Product] = []
+    @State private var loadingState: LoadingState<[Product]> = .loading
     
     private func loadProducts() async {
                 
@@ -34,7 +35,7 @@ struct ProductListScreen: View {
     
     var body: some View {
         ZStack {
-            if products.isEmpty {
+            if products.isEmpty && !isLoading {
                 ContentUnavailableView("No products available", systemImage: "shippingbox")
             } else {
                 List(products) { product in

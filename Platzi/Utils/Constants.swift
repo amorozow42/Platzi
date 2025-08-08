@@ -19,6 +19,7 @@ enum Endpoint {
     case addProduct
     case productsByCategory(Int)
     case deleteProduct(Int)
+    case locations
 
     var path: String {
         switch self {
@@ -38,6 +39,8 @@ enum Endpoint {
             return "/categories/\(categoryId)/products"
         case .deleteProduct(let productId):
             return "/products/\(productId)"
+        case .locations:
+            return "/locations"
         }
     }
 

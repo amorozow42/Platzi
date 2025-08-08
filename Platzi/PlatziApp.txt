@@ -12,50 +12,54 @@ struct ProductListScreen: View {
     let category: Category
     @Environment(PlatziStore.self) private var store
     @Environment(\.dismiss) private var dismiss
-    @State private var loadingState: LoadingState<[Product]> = .loading
     @State private var showAddProductScreen: Bool = false
+    @State private var isLoading: Bool = false
+    
+    @State private var products: [Product] = []
     
     private func loadProducts() async {
+                
+        guard !isLoading else { return }
+        isLoading = true
+        
+        defer { isLoading = false }
+                
         do {
-            try await store.loadProductsBy(categoryId: category.id)
-            loadingState = .success(store.products)
+            products = try await store.loadProductsBy(categoryId: category.id)
         } catch {
-            loadingState = .failure(error)
+            // show error in toast message
+            print("Failed to load: \(error.localizedDescription)")
         }
     }
     
     var body: some View {
         ZStack {
-            switch loadingState {
-                case .loading:
-                    ProgressView("Loading...")
-                case .success(let products):
-                    if products.isEmpty {
-                        ContentUnavailableView("No products available", systemImage: "shippingbox")
-                    } else {
-                        List(products) { product in
-                            NavigationLink {
-                                ProductDetailScreen(product: product)
-                            } label: {
-                                ProductCellView(product: product)
-                            }
-                        }
+            if products.isEmpty {
+                ContentUnavailableView("No products available", systemImage: "shippingbox")
+            } else {
+                List(products) { product in
+                    NavigationLink {
+                        ProductDetailScreen(product: product)
+                    } label: {
+                        ProductCellView(product: product)
                     }
-                case .failure(let error):
-                    Text(error.localizedDescription)
-                        .foregroundStyle(.red)
+                }.refreshable(action: {
+                    await loadProducts()
+                })
             }
-        }
+        }.overlay(alignment: .center, content: {
+            if isLoading {
+                ProgressView("Loading...")
+            }
+        })
         .task {
             await loadProducts()
         }
-        .onChange(of: store.products, {
-            loadingState = .success(store.products)
-        })
-        
         .sheet(isPresented: $showAddProductScreen, content: {
             NavigationStack {
-                AddProductScreen(selectedCategoryId: category.id)
+                AddProductScreen(selectedCategoryId: category.id) { product in
+                    products.append(product)
+                }
             }
         })
         .toolbar {

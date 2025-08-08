@@ -13,6 +13,7 @@ import Observation
 class PlatziStore {
     
     var categories: [Category] = []
+    var locations: [Location] = []
     
     let httpClient: HTTPClient
     
@@ -20,9 +21,14 @@ class PlatziStore {
         self.httpClient = httpClient
     }
     
+    func loadLocations() async throws {
+        let resource = Resource(endpoint: .locations, modelType: [Location].self)
+        locations = try await httpClient.load(resource)
+    }
+    
     func createCategory(name: String) async throws {
         
-        let createCategoryRequest = CreateCategoryRequest(name: name, url: URL.randomImageURL)
+        let createCategoryRequest = CreateCategoryRequest(name: name, image: URL.randomImageURL)
         let resource = Resource(endpoint: .createCategory, method: .post(try createCategoryRequest.encode()), modelType: Category.self)
         let category = try await httpClient.load(resource)
         categories.append(category)
@@ -39,6 +45,7 @@ class PlatziStore {
     }
     
     func loadProductsBy(categoryId: Int) async throws -> [Product] {
+        
         let resource = Resource(endpoint: .productsByCategory(categoryId), modelType: [Product].self)
         return try await httpClient.load(resource)
     }

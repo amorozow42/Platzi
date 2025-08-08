@@ -10,15 +10,27 @@ import SwiftUI
 struct CategoryListScreen: View {
     
     @Environment(PlatziStore.self) private var store
-    @State private var loadingState: LoadingState<[Category]> = .loading
     @State private var showAddCategoryScreen: Bool = false
+    @State private var isLoading: Bool = false
+    
+    private func loadCategories() async {
+        
+        defer { isLoading = false }
+        
+        do {
+            isLoading = true
+            try await store.loadCategories()
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
     
     var body: some View {
         ZStack {
-            switch loadingState {
-            case .loading:
-                ProgressView("Loading...")
-            case .success:
+            
+            if store.categories.isEmpty && !isLoading {
+                ContentUnavailableView("No products available", systemImage: "shippingbox")
+            } else {
                 List(store.categories) { category in
                     NavigationLink {
                         ProductListScreen(category: category)
@@ -27,11 +39,13 @@ struct CategoryListScreen: View {
                         CategoryCellView(category: category)
                     }
                 }
-            case .failure(let error):
-                Text(error)
-                    .foregroundStyle(.red)
             }
         }
+        .overlay(alignment: .center, content: {
+            if isLoading {
+                ProgressView("Loading...")
+            }
+        })
         .toolbar(content: {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Add Category") {
@@ -40,16 +54,12 @@ struct CategoryListScreen: View {
             }
         })
         .sheet(isPresented: $showAddCategoryScreen, content: {
-            AddCategoryScreen()
+            NavigationStack {
+                AddCategoryScreen()
+            }
         })
         .task {
-            do {
-                try await store.loadCategories()
-                loadingState = .success(store.categories)
-               // loadingState = .success
-            } catch {
-                //loadingState = .failure(error.localizedDescription)
-            }
+            await loadCategories()
         }.navigationTitle("Categories")
     }
 }

@@ -10,6 +10,7 @@ import SwiftUI
 struct AddCategoryScreen: View {
     
     @Environment(PlatziStore.self) private var store
+    @Environment(\.dismiss) private var dismiss
     @State private var name: String = ""
     @State private var isLoading: Bool = false
     
@@ -24,6 +25,7 @@ struct AddCategoryScreen: View {
         do {
             isLoading = true
             try await store.createCategory(name: name)
+            dismiss()
         } catch {
             print(error.localizedDescription)
         }
@@ -36,9 +38,9 @@ struct AddCategoryScreen: View {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Save") {
                     Task { await createCategory() }
-                }.disabled(isLoading || !isFormValid)
+                }.disabled(!isFormValid || isLoading)
             }
-        }
+        }.navigationTitle("Add New Category")
     }
 }
 

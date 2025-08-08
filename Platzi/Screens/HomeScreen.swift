@@ -23,7 +23,9 @@ struct HomeScreen: View {
             }
             
             Tab {
-                Text("Locations")
+                NavigationStack {
+                    LocationsScreen()
+                }
             } label: {
                 Label("Locations", systemImage: "map")
             }
@@ -41,4 +43,5 @@ struct HomeScreen: View {
 
 #Preview {
     HomeScreen()
+        .environment(PlatziStore(httpClient: .development))
 }

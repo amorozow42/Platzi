@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MapKit
 
 struct RefreshTokenResponse: Codable {
     let accessToken: String
@@ -59,7 +60,7 @@ struct Category: Identifiable, Codable, Hashable {
 
 struct CreateCategoryRequest: Codable {
     let name: String
-    let url: URL
+    let image: URL
 }
 
 struct CreateProductRequest: Codable {
@@ -94,5 +95,17 @@ extension Product {
     }
 }
 
+
+struct Location: Identifiable, Codable {
+    let id: Int
+    let name: String
+    let description: String
+    let latitude: Double
+    let longitude: Double
+    
+    var coordinate: CLLocationCoordinate2D {
+        CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
+}
 
 
