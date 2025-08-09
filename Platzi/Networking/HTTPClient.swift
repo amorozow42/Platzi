@@ -117,8 +117,8 @@ struct HTTPClient: HTTPClientProtocol {
         }
     }
 
-    @MainActor
-    private func refreshToken() async throws {
+    // If you want you can move this into a separate struct like TokenService etc 
+    func refreshToken() async throws {
         guard let refreshToken = Keychain<String>.get("refreshToken") else {
             throw TokenError.refreshTokenMissing
         }

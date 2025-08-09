@@ -18,7 +18,7 @@ struct AuthenticationController {
 
         if JWTDecoder.isExpired(token: accessToken) {
             do {
-                try await refreshToken()
+                try await httpClient.refreshToken()
                 return true
             } catch {
                 return false
@@ -33,22 +33,6 @@ struct AuthenticationController {
         UserDefaults.standard.removeObject(forKey: "isAuthenticated")
         let _ = Keychain<String>.delete("accessToken")
         let _ = Keychain<String>.delete("refreshToken")
-    }
-   
-    func refreshToken() async throws {
-        // get access to the token
-        guard let refreshToken: String = Keychain.get("refreshToken") else {
-            throw TokenError.refreshTokenMissing
-        }
-        
-        let body = try JSONEncoder().encode(["refreshToken": refreshToken])
-        let resource = Resource(endpoint: .refreshToken, method: .post(body), modelType: RefreshTokenResponse.self)
-        
-        let response = try await httpClient.load(resource)
-        
-        // update accessToken and refreshToken
-        Keychain.set(response.accessToken, forKey: "accessToken")
-        Keychain.set(response.refreshToken, forKey: "refreshToken")
     }
     
     func register(name: String, email: String, password: String) async throws -> RegistrationResponse {
