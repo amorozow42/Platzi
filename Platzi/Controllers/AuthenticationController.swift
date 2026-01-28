@@ -39,7 +39,7 @@ struct AuthenticationController {
         
         let request = RegistrationRequest(name: name, email: email, password: password, avatar: URL(string: "https://picsum.photos/800")!)
         
-        let resource = Resource(endpoint: .register, method: .post(try request.encode()), modelType: RegistrationResponse.self)
+        let resource = Resource<RegistrationResponse>(endpoint: .register, method: .post(try request.encode()))
         
         let response = try await httpClient.load(resource)
         return response
@@ -49,7 +49,7 @@ struct AuthenticationController {
         
         let request = LoginRequest(email: email, password: password)
         
-        let resource = Resource(endpoint: .login, method: .post(try request.encode()), modelType: LoginResponse.self)
+        let resource = Resource<LoginResponse>(endpoint: .login, method: .post(try request.encode()))
         let response = try await httpClient.load(resource)
         
         Keychain.set(response.accessToken, forKey: "accessToken")

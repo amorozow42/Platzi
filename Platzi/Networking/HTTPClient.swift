@@ -34,8 +34,7 @@ enum HTTPMethod {
 struct Resource<T: Codable> {
     let endpoint: Endpoint
     var method: HTTPMethod = .get([])
-    var headers: [String: String]? = nil
-    var modelType: T.Type
+    var headers: [String: String] = [:]
 }
 
 struct HTTPClient: HTTPClientProtocol {
@@ -87,10 +86,9 @@ struct HTTPClient: HTTPClientProtocol {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 
-        if let headers = resource.headers {
-            for (key, value) in headers {
-                request.setValue(value, forHTTPHeaderField: key)
-            }
+        // Add resource headers if present
+        for (key, value) in resource.headers {
+            request.setValue(value, forHTTPHeaderField: key)
         }
 
         let (data, response) = try await session.data(for: request)
@@ -111,7 +109,7 @@ struct HTTPClient: HTTPClientProtocol {
         }
 
         do {
-            return try JSONDecoder().decode(resource.modelType, from: data)
+            return try JSONDecoder().decode(T.self, from: data)
         } catch {
             throw NetworkError.decodingError(error)
         }
@@ -124,10 +122,9 @@ struct HTTPClient: HTTPClientProtocol {
         }
 
         let body = try JSONEncoder().encode(["refreshToken": refreshToken])
-        let resource = Resource(
+        let resource = Resource<RefreshTokenResponse>(
             endpoint: .refreshToken,
-            method: .post(body),
-            modelType: RefreshTokenResponse.self
+            method: .post(body)
         )
 
         let response = try await performRequest(resource)
