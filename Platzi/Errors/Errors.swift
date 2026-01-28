@@ -11,7 +11,7 @@ enum TokenError: Error {
     case refreshTokenMissing
 }
 
-struct ErrorResponse: Codable {
+nonisolated struct ErrorResponse: Codable {
     let message: String?
 }
 
